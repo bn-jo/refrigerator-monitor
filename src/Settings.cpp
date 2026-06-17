@@ -51,6 +51,8 @@ void SettingsManager::applyDefaults() {
   email = { "", 465, "", "", "", "", false };
   timezone   = DEFAULT_TZ;
   deviceName = DEVICE_HOSTNAME;
+  wifiSsid   = WIFI_FALLBACK_SSID;
+  wifiPass   = WIFI_FALLBACK_PASS;
 
   users.clear();
   addOrUpdateUser(DEFAULT_USER, DEFAULT_PASS);
@@ -127,6 +129,8 @@ bool SettingsManager::load() {
   outdoorName     = doc["outdoorName"] | "Outdoor";
   timezone        = doc["tz"]          | DEFAULT_TZ;
   deviceName      = doc["deviceName"]  | DEVICE_HOSTNAME;
+  wifiSsid        = doc["wifi"]["ssid"] | String(WIFI_FALLBACK_SSID);
+  wifiPass        = doc["wifi"]["pass"] | String(WIFI_FALLBACK_PASS);
 
   email.host      = doc["email"]["host"]      | "";
   email.port      = doc["email"]["port"]      | 465;
@@ -170,6 +174,8 @@ bool SettingsManager::save() {
   doc["outdoorName"] = outdoorName;
   doc["tz"]          = timezone;
   doc["deviceName"]  = deviceName;
+  doc["wifi"]["ssid"] = wifiSsid;
+  doc["wifi"]["pass"] = wifiPass;
   doc["email"]["host"]      = email.host;
   doc["email"]["port"]      = email.port;
   doc["email"]["user"]      = email.user;
@@ -208,6 +214,9 @@ String SettingsManager::toPublicJson() const {
   doc["outdoorName"] = outdoorName;
   doc["tz"]          = timezone;
   doc["deviceName"]  = deviceName;
+  // WiFi fallback: expose the SSID but never the password.
+  doc["wifi"]["ssid"]    = wifiSsid;
+  doc["wifi"]["hasPass"] = !wifiPass.isEmpty();
   // E-mail: expose everything except the password.
   doc["email"]["host"]      = email.host;
   doc["email"]["port"]      = email.port;
@@ -241,6 +250,14 @@ bool SettingsManager::updateFromJson(const String& body, String& errOut) {
   if (doc["outdoorName"].is<const char*>()) outdoorName = doc["outdoorName"].as<String>();
   if (doc["deviceName"].is<const char*>())  deviceName  = doc["deviceName"].as<String>();
   if (doc["tz"].is<const char*>())          timezone    = doc["tz"].as<String>();
+
+  if (doc["wifi"].is<JsonObject>()) {
+    JsonObject w = doc["wifi"];
+    if (w["ssid"].is<const char*>()) wifiSsid = w["ssid"].as<String>();
+    // Only overwrite the password if a non-empty one was supplied.
+    if (w["pass"].is<const char*>() && strlen(w["pass"]) > 0)
+      wifiPass = w["pass"].as<String>();
+  }
 
   if (doc["email"].is<JsonObject>()) {
     JsonObject e = doc["email"];

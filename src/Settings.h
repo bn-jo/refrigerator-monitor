@@ -36,6 +36,8 @@ public:
   std::vector<UserCred> users;   // multiple login accounts
   String    timezone;       // POSIX TZ string
   String    deviceName;
+  String    wifiSsid;       // WiFi fallback SSID (editable from the UI)
+  String    wifiPass;       // WiFi fallback password (editable from the UI)
 
   void  begin();            // load from flash or seed defaults
   bool  load();

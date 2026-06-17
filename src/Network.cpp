@@ -4,6 +4,7 @@
 #include "Network.h"
 #include "config.h"
 #include "Logger.h"
+#include "Settings.h"
 #include <ETH.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -69,13 +70,13 @@ void NetworkClass::loop() {
   if (!_ethUp && !_wifi && !_fallbackTried &&
       millis() - _ethStart > ETH_LINK_TIMEOUT_MS) {
     _fallbackTried = true;
-    LOGW("net", "no Ethernet — falling back to WiFi SSID '" WIFI_FALLBACK_SSID "'");
+    LOGW("net", "no Ethernet — falling back to WiFi SSID '" + Settings.wifiSsid + "'");
     WiFi.mode(WIFI_STA);
 #if USE_STATIC_IP
     if (!WiFi.config(S_IP, S_GW, S_MASK, S_DNS1, S_DNS2))
       LOGE("net", "WiFi static IP config failed");
 #endif
-    WiFi.begin(WIFI_FALLBACK_SSID, WIFI_FALLBACK_PASS);
+    WiFi.begin(Settings.wifiSsid.c_str(), Settings.wifiPass.c_str());
   }
 
   // If Ethernet recovers while on WiFi, prefer Ethernet again.

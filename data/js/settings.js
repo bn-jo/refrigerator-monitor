@@ -40,6 +40,11 @@ window.Settings = (function () {
       document.getElementById('setOutdoorName').value = s.outdoorName || '';
       document.getElementById('setTz').value          = s.tz || '';
 
+      const w = s.wifi || {};
+      document.getElementById('setWifiSsid').value       = w.ssid || '';
+      document.getElementById('setWifiPass').value       = '';
+      document.getElementById('setWifiPass').placeholder = w.hasPass ? tt('settings.unchanged') : '';
+
       const e = s.email || {};
       document.getElementById('emEnabled').checked   = !!e.enabled;
       document.getElementById('emProvider').value    = detectProvider(e.host || '');
@@ -105,6 +110,7 @@ window.Settings = (function () {
       deviceName:  document.getElementById('setDeviceName').value,
       outdoorName: document.getElementById('setOutdoorName').value,
       tz:          document.getElementById('setTz').value,
+      wifi: { ssid: document.getElementById('setWifiSsid').value },
       email: {
         enabled:   document.getElementById('emEnabled').checked,
         host, port,
@@ -115,6 +121,8 @@ window.Settings = (function () {
     };
     const pass = document.getElementById('emPass').value;
     if (pass) body.email.pass = pass;
+    const wpass = document.getElementById('setWifiPass').value;
+    if (wpass) body.wifi.pass = wpass;
     const np = document.getElementById('setPass').value;
     if (np) body.newPassword = np;
     return body;

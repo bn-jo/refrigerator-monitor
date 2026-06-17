@@ -91,6 +91,12 @@
         <label data-i18n="settings.timezone">Timezone (POSIX TZ) <input id="setTz" placeholder="IST-2IDT,M3.4.4/26,M10.5.0"></label>
       </div>
       <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.network">WiFi Fallback</h3>
+        <p class="muted" style="margin-top:0" data-i18n="settings.wifiHint">Used only when no Ethernet link is detected. Changes take effect on the next WiFi fallback or after a restart.</p>
+        <label data-i18n="settings.wifiSsid">WiFi network (SSID) <input id="setWifiSsid" autocomplete="off"></label>
+        <label data-i18n="settings.wifiPass">WiFi password <input id="setWifiPass" type="password" data-i18n-ph="settings.unchanged" placeholder="(unchanged)" autocomplete="new-password"></label>
+      </div>
+      <div class="card" style="margin-top:14px">
         <h3 data-i18n="settings.email">E-mail Alerts</h3>
         <label><input type="checkbox" id="emEnabled" style="width:auto"> <span data-i18n="settings.emailEnable">Enable e-mail alerts</span></label>
         <label><span data-i18n="settings.sendTo">Send alerts to</span> <input id="emRecipient" type="email" placeholder="you@example.com"></label>
