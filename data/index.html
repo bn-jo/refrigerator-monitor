@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refrigerator Monitor</title>
+  <link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">
+      <span class="brand">❄️</span>
+      <h1 id="deviceName">Refrigerator Monitor</h1>
+      <span class="spacer"></span>
+      <select id="langSel" class="lang-sel" title="Language / שפה">
+        <option value="en">EN</option>
+        <option value="he">עברית</option>
+      </select>
+      <button class="btn" id="logoutBtn" data-i18n="logout">Logout</button>
+    </div>
+    <div class="statusbar">
+      <span id="pillNet"  class="pill">Ethernet</span>
+      <span id="pillRssi" class="pill signal" hidden>
+        <span class="bars"><i></i><i></i><i></i><i></i></span>
+        <span id="rssiTxt">-- dBm</span>
+      </span>
+      <span id="pillInet" class="pill">Internet</span>
+      <span id="pillOutdoor" class="pill outdoor">🌡️ --</span>
+      <span id="pillTime" class="pill">--:--</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-view="dashboard" class="active" data-i18n="nav.dashboard">Dashboard</button>
+    <button data-view="settings" data-i18n="nav.settings">Settings</button>
+    <button data-view="logs" data-i18n="nav.logs">Logs</button>
+  </nav>
+
+  <main>
+    <!-- ============ DASHBOARD ============ -->
+    <section id="dashboard" class="view active">
+      <!-- Live temperatures first -->
+      <h2 data-i18n="live.title">Live Temperatures</h2>
+      <div class="grid fridges" id="fridges"></div>
+
+      <!-- Historical chart directly below live temperatures -->
+      <h2 style="margin-top:22px" data-i18n="chart.title">History</h2>
+      <div class="toolbar">
+        <div class="range-btns">
+          <button class="btn" data-range="1h" data-i18n="range.1h">Last hour</button>
+          <button class="btn active" data-range="24h" data-i18n="range.24h">24 hours</button>
+          <button class="btn" data-range="7d" data-i18n="range.7d">7 days</button>
+          <button class="btn" data-range="30d" data-i18n="range.30d">30 days</button>
+        </div>
+        <span class="spacer"></span>
+        <button class="btn" id="resetZoom" data-i18n="chart.resetZoom">Reset zoom</button>
+        <button class="btn" id="fsBtn" data-i18n="chart.fullscreen">⛶ Fullscreen</button>
+      </div>
+      <div class="card chart-wrap" id="chartWrap">
+        <canvas id="histChart"></canvas>
+      </div>
+      <p class="muted" style="margin-top:8px" data-i18n="chart.tip">
+        Tip: scroll / pinch to zoom, drag to pan, click a legend item to show/hide a line.
+      </p>
+
+      <!-- System information -->
+      <h2 style="margin-top:22px" data-i18n="sys.title">System</h2>
+      <div class="grid sysinfo" id="sysinfo"></div>
+
+      <div class="toolbar" style="margin-top:18px">
+        <button class="btn btn-danger" id="restartBtn" data-i18n="restart">⟳ Restart Device</button>
+        <span class="muted" id="acqStatus"></span>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section id="settings" class="view">
+      <div class="card">
+        <h3 data-i18n="settings.fridges">Refrigerators</h3>
+        <p class="muted" style="margin-top:0" data-i18n="settings.thrHint">Alarm e-mail is sent when a refrigerator rises ABOVE its threshold.</p>
+        <div class="row" style="align-items:flex-end;margin-bottom:12px">
+          <label><span data-i18n="settings.setAll">Set all thresholds (°C)</span> <input id="setAllThr" type="number" step="0.5"></label>
+          <button class="btn" id="applyAllThr" style="flex:0 0 auto" data-i18n="settings.apply">Apply to all</button>
+        </div>
+        <div id="fridgeSettings"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.general">General</h3>
+        <label data-i18n="settings.deviceName">Device name <input id="setDeviceName"></label>
+        <label data-i18n="settings.outdoorName">Outdoor sensor name <input id="setOutdoorName"></label>
+        <label data-i18n="settings.timezone">Timezone (POSIX TZ) <input id="setTz" placeholder="IST-2IDT,M3.4.4/26,M10.5.0"></label>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.email">E-mail Alerts</h3>
+        <label><input type="checkbox" id="emEnabled" style="width:auto"> <span data-i18n="settings.emailEnable">Enable e-mail alerts</span></label>
+        <label><span data-i18n="settings.sendTo">Send alerts to</span> <input id="emRecipient" type="email" placeholder="you@example.com"></label>
+      </div>
+      <details class="card" style="margin-top:14px" open>
+        <summary class="card-summary" data-i18n="settings.smtpProvider">E-mail Provider (SMTP)</summary>
+        <label><span data-i18n="settings.provider">Provider</span>
+          <select id="emProvider">
+            <option value="gmail">Gmail</option>
+            <option value="outlook">Outlook</option>
+            <option value="brevo">Brevo</option>
+            <option value="custom" data-i18n="settings.custom">Custom</option>
+          </select>
+        </label>
+        <label><span data-i18n="settings.emailLogin">Login (e-mail / username)</span> <input id="emUser" type="text" autocomplete="off"></label>
+        <label><span data-i18n="settings.emailPass">Password / SMTP key</span> <input id="emPass" type="password" data-i18n-ph="settings.unchanged" placeholder="(unchanged)"></label>
+        <div id="emCustom" hidden>
+          <div class="row">
+            <label><span data-i18n="settings.smtpServer">SMTP server</span> <input id="emHost"></label>
+            <label><span data-i18n="settings.port">Port</span> <input id="emPort" type="number" value="587"></label>
+          </div>
+          <label><span data-i18n="settings.fromAddr">From address</span> <input id="emFrom" type="email"></label>
+        </div>
+        <div class="toolbar" style="margin-bottom:0">
+          <button class="btn" id="emTest" data-i18n="settings.testEmail">Send test e-mail</button>
+          <button class="btn" id="emReset" data-i18n="settings.reset">Reset to default</button>
+        </div>
+      </details>
+      <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.users">Users</h3>
+        <div id="userList"></div>
+        <div class="row" style="align-items:flex-end;margin-top:10px">
+          <label><span data-i18n="settings.username">Username</span> <input id="newUser" autocomplete="off"></label>
+          <label><span data-i18n="settings.password">Password</span> <input id="newUserPass" type="password" autocomplete="new-password"></label>
+          <button class="btn" id="addUserBtn" style="flex:0 0 auto" data-i18n="settings.addUser">Add user</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.security">Security</h3>
+        <label data-i18n="settings.newPass">New password (leave blank to keep) <input id="setPass" type="password" minlength="6"></label>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn btn-primary" id="saveSettings" data-i18n="settings.save">Save settings</button>
+      </div>
+    </section>
+
+    <!-- ============ LOGS ============ -->
+    <section id="logs" class="view">
+      <div class="toolbar">
+        <select id="logLevel" style="max-width:140px">
+          <option value="" data-i18n="logs.all">All levels</option>
+          <option value="INFO" data-i18n="logs.info">Info</option>
+          <option value="WARN" data-i18n="logs.warn">Warn</option>
+          <option value="ERROR" data-i18n="logs.error">Error</option>
+        </select>
+        <input id="logCat" data-i18n-ph="logs.filterCat" placeholder="Filter category (e.g. net)" style="max-width:220px">
+        <span class="spacer"></span>
+        <button class="btn" id="logRefresh" data-i18n="logs.refresh">Refresh</button>
+        <button class="btn" id="logDownload" data-i18n="logs.download">Download</button>
+        <button class="btn btn-danger" id="logClear" data-i18n="logs.clear">Clear</button>
+      </div>
+      <div class="logbox" id="logbox"></div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- Chart.js + zoom plugin. For fully offline operation, download these
+       into /js/ and change the src to local paths (see docs/MAINTENANCE.md). -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+  <script src="/js/i18n.js?v=2"></script>
+  <script src="/js/app.js?v=2"></script>
+  <script src="/js/charts.js?v=2"></script>
+  <script src="/js/settings.js?v=2"></script>
+  <script src="/js/logs.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — Refrigerator Monitor</title>
+  <link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body class="login-bg">
+  <form id="loginForm" class="login-card" autocomplete="on">
+    <div class="login-logo">❄️</div>
+    <h1>Refrigerator Monitor</h1>
+    <p class="muted" data-i18n="login.subtitle">Sign in to continue</p>
+    <label data-i18n="login.username">Username
+      <input type="text" id="user" name="username" required autofocus>
+    </label>
+    <label data-i18n="login.password">Password
+      <input type="password" id="pass" name="password" required>
+    </label>
+    <button type="submit" class="btn btn-primary btn-block" data-i18n="login.signin">Sign in</button>
+    <p id="err" class="login-err" hidden></p>
+    <select id="langSel" class="lang-sel" style="margin-top:14px">
+      <option value="en">EN</option>
+      <option value="he">עברית</option>
+    </select>
+  </form>
+  <script src="/js/i18n.js?v=2"></script>
+  <script src="/js/login.js?v=2"></script>
+</body>
+</html>

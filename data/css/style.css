@@ -1,0 +1,173 @@
+/* =====================================================================
+   Refrigerator Monitor — responsive UI styles
+   ===================================================================== */
+:root {
+  --bg:#0f172a; --panel:#1e293b; --panel-2:#273549; --line:#334155;
+  --text:#e2e8f0; --muted:#94a3b8;
+  --green:#16a34a; --yellow:#f59e0b; --red:#dc2626; --blue:#2563eb;
+  --radius:14px;
+}
+* { box-sizing:border-box; }
+html,body { margin:0; padding:0; }
+body {
+  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--text); font-size:15px;
+}
+.muted { color:var(--muted); }
+a { color:var(--blue); }
+
+/* ---- Layout ---- */
+header.topbar {
+  position:sticky; top:0; z-index:20;
+  display:flex; flex-direction:column; gap:10px;
+  padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line);
+}
+.topbar-title { display:flex; align-items:center; gap:12px; }
+.topbar h1 { font-size:17px; margin:0; flex:0 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.topbar .brand { font-size:22px; flex:0 0 auto; }
+.topbar .spacer { flex:1; }
+.statusbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.lang-sel {
+  width:auto; flex:0 0 auto; padding:6px 8px; font-size:13px; border-radius:8px;
+  background:var(--bg); border:1px solid var(--line); color:var(--text);
+}
+.pill {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; padding:5px 10px; border-radius:999px; white-space:nowrap;
+  background:var(--panel-2); border:1px solid var(--line);
+}
+.pill.ok   { color:#bbf7d0; border-color:#14532d; }
+.pill.bad  { color:#fecaca; border-color:#7f1d1d; }
+.pill.outdoor { font-weight:600; }
+
+/* WiFi signal bars */
+.bars { display:inline-flex; align-items:flex-end; gap:2px; height:13px; }
+.bars i { width:3px; border-radius:1px; background:var(--line); }
+.bars i:nth-child(1){ height:4px; }
+.bars i:nth-child(2){ height:7px; }
+.bars i:nth-child(3){ height:10px; }
+.bars i:nth-child(4){ height:13px; }
+.bars[data-level="1"] i:nth-child(-n+1),
+.bars[data-level="2"] i:nth-child(-n+2),
+.bars[data-level="3"] i:nth-child(-n+3),
+.bars[data-level="4"] i:nth-child(-n+4) { background:currentColor; }
+
+nav.tabs { display:flex; gap:4px; padding:0 12px; background:var(--panel);
+  border-bottom:1px solid var(--line); overflow-x:auto; }
+nav.tabs button {
+  background:none; border:none; color:var(--muted); padding:14px 16px;
+  font-size:15px; cursor:pointer; border-bottom:3px solid transparent;
+}
+nav.tabs button.active { color:var(--text); border-bottom-color:var(--blue); }
+
+main { padding:18px; max-width:1200px; margin:0 auto; }
+.view { display:none; }
+.view.active { display:block; }
+
+/* ---- Cards / grids ---- */
+.grid { display:grid; gap:14px; }
+.grid.fridges { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+.grid.sysinfo { grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); }
+.card {
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); padding:16px;
+}
+.card h3 { margin:0 0 4px; font-size:15px; }
+.kv { font-size:13px; color:var(--muted); }
+.kv b { color:var(--text); font-weight:600; }
+
+/* ---- Fridge tile ---- */
+.fridge { position:relative; overflow:hidden; }
+.fridge .temp { font-size:38px; font-weight:700; margin:6px 0; }
+.fridge .unit { font-size:18px; color:var(--muted); }
+.fridge .bar { height:6px; border-radius:6px; margin-top:8px; background:var(--panel-2); }
+.fridge.normal { border-left:6px solid var(--green); }
+.fridge.near   { border-left:6px solid var(--yellow); }
+.fridge.alarm  { border-left:6px solid var(--red); animation:pulse 1.4s infinite; }
+.fridge.fault, .fridge.missing { border-left:6px solid var(--muted); opacity:.7; }
+.dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
+.dot.normal{background:var(--green);} .dot.near{background:var(--yellow);}
+.dot.alarm{background:var(--red);} .dot.fault,.dot.missing{background:var(--muted);}
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4);} 50%{box-shadow:0 0 0 8px rgba(220,38,38,0);} }
+
+/* ---- Buttons / forms ---- */
+.btn { padding:9px 16px; border-radius:10px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--text); cursor:pointer; font-size:14px; }
+.btn:hover { filter:brightness(1.15); }
+.btn-primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+.btn-danger  { background:var(--red);  border-color:var(--red);  color:#fff; }
+.btn-block { width:100%; margin-top:10px; }
+label { display:block; margin:10px 0; font-size:13px; color:var(--muted); }
+input, select { width:100%; margin-top:5px; padding:9px 11px; font-size:14px;
+  background:var(--bg); border:1px solid var(--line); border-radius:9px; color:var(--text); }
+.row { display:flex; gap:12px; flex-wrap:wrap; }
+.row > * { flex:1; min-width:160px; }
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.btn-sm { padding:5px 10px; font-size:13px; }
+.userrow { display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:9px;
+  background:var(--bg); margin-bottom:6px; }
+.fridge-setting { border:1px solid var(--line); border-radius:10px;
+  padding:10px 12px; margin-bottom:10px; background:var(--bg); }
+.fridge-setting-h { font-weight:700; font-size:13px; color:var(--muted); margin-bottom:4px; }
+.card-summary { font-weight:600; font-size:15px; cursor:pointer; list-style:revert; }
+details.card > summary { margin:-4px 0 0; }
+details.card[open] > summary { margin-bottom:10px; }
+
+/* ---- Charts ---- */
+.chart-wrap { position:relative; height:60vh; min-height:320px; }
+.chart-wrap.fullscreen { position:fixed; inset:0; z-index:50; height:100vh;
+  background:var(--bg); padding:16px; }
+.range-btns button.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+/* ---- Logs table ---- */
+.logbox { background:#0b1220; border:1px solid var(--line); border-radius:10px;
+  padding:12px; max-height:65vh; overflow:auto; font-family:ui-monospace,Menlo,monospace;
+  font-size:13px; line-height:1.5; }
+.logline.ERROR { color:#fca5a5; } .logline.WARN { color:#fcd34d; }
+.logline.INFO  { color:#cbd5e1; }
+
+/* ---- Login ---- */
+.login-bg { display:flex; align-items:center; justify-content:center;
+  min-height:100vh; background:radial-gradient(circle at 50% 0,#1e293b,#0f172a); }
+.login-card { background:var(--panel); border:1px solid var(--line);
+  border-radius:18px; padding:34px 30px; width:340px; max-width:92vw; text-align:center; }
+.login-logo { font-size:46px; }
+.login-card h1 { font-size:20px; margin:6px 0 0; }
+.login-card label { text-align:left; }
+.login-err { color:#fca5a5; margin-top:12px; }
+
+/* ---- Toast ---- */
+#toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:var(--panel-2); border:1px solid var(--line); padding:12px 18px;
+  border-radius:10px; opacity:0; transition:opacity .3s; z-index:100; }
+#toast.show { opacity:1; }
+
+/* ---- RTL (Hebrew) ---- */
+[dir="rtl"] .fridge.normal,[dir="rtl"] .fridge.near,[dir="rtl"] .fridge.alarm,
+[dir="rtl"] .fridge.fault,[dir="rtl"] .fridge.missing { border-left:none; }
+[dir="rtl"] .fridge.normal { border-right:6px solid var(--green); }
+[dir="rtl"] .fridge.near   { border-right:6px solid var(--yellow); }
+[dir="rtl"] .fridge.alarm  { border-right:6px solid var(--red); }
+[dir="rtl"] .fridge.fault, [dir="rtl"] .fridge.missing { border-right:6px solid var(--muted); }
+[dir="rtl"] .dot { margin-right:0; margin-left:6px; }
+[dir="rtl"] nav.tabs button { border-bottom:3px solid transparent; }
+
+/* ---- Mobile ---- */
+@media (max-width:600px) {
+  header.topbar { padding:10px 12px; }
+  .topbar h1 { font-size:15px; }
+  .topbar .brand { font-size:19px; }
+  .pill { font-size:11px; padding:4px 8px; }
+  .grid.fridges { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .grid.sysinfo { grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
+  .fridge .temp { font-size:30px; }
+  nav.tabs button { padding:12px 13px; font-size:14px; }
+  main { padding:12px; }
+  .chart-wrap { height:48vh; min-height:260px; }
+  .toolbar { gap:8px; }
+  .range-btns button { padding:7px 10px; font-size:13px; }
+}
+@media (max-width:380px) {
+  .grid.fridges { grid-template-columns:1fr 1fr; }
+}
