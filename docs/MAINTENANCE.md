@@ -55,7 +55,7 @@ The UI loads Chart.js from a CDN by default. For sites without Internet:
 | A fridge shows `missing` | Sensor not enumerated: check DATA/GND continuity, pull-up present, connector seated. |
 | A fridge shows `fault` / 85 °C | Power/conversion glitch: use external power, add 100 nF at sensor, shorten stub. |
 | All sensors `missing` | Wrong GPIO in `config.h`, missing pull-up, or no 3.3 V to sensors. |
-| No IP / `mode` stuck | Check RJ45 link LED, DHCP on router; serial log shows ETH events. Falls back to WiFi `ben` after 15 s. |
+| No IP / `mode` stuck | Check RJ45 link LED, DHCP on router; serial log shows ETH events. Joins via DHCP first, then promotes to the static IP if valid; falls back to the configured WiFi SSID after 15 s. Reach it at `monitor.local`. |
 | Internet ✕ but LAN ok | Firewall blocking outbound 53; e-mail/NTP may fail. |
 | E-mail not sent | Check SMTP host/port/credentials; Gmail needs an **App Password**; see Logs. |
 | Charts empty | Not enough history yet, or Chart.js CDN blocked (see offline section). |
@@ -69,7 +69,7 @@ The UI loads Chart.js from a CDN by default. For sites without Internet:
 ### OTA notes
 - OTA needs the device already running networked firmware; the first flash
   must be over USB.
-- Keep `[env:ota] upload_port` = device static IP and `--auth=` = `OTA_PASSWORD`.
+- Keep `[env:ota] upload_port` = device IP (or `monitor.local`) and `--auth=` = `OTA_PASSWORD`.
 - An OTA **firmware** update preserves LittleFS (history/settings/logs). An
   OTA **`uploadfs`** still rewrites the whole filesystem partition (erases
   history/settings/logs) — same caveat as USB `uploadfs` below.

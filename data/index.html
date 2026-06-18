@@ -91,6 +91,27 @@
         <label data-i18n="settings.timezone">Timezone (POSIX TZ) <input id="setTz" placeholder="IST-2IDT,M3.4.4/26,M10.5.0"></label>
       </div>
       <div class="card" style="margin-top:14px">
+        <h3 data-i18n="settings.ipTitle">IP Address</h3>
+        <p class="muted" style="margin-top:0" data-i18n="settings.ipHint">The device always joins via DHCP first, then switches to the static address below only on networks where it is valid — so it works on any network. Changes take effect after a restart.</p>
+        <label data-i18n="settings.ipMode">Addressing
+          <select id="netMode">
+            <option value="dhcp" data-i18n="settings.ipDhcp">Automatic (DHCP)</option>
+            <option value="static" data-i18n="settings.ipStatic">Prefer static address</option>
+          </select>
+        </label>
+        <div id="netStatic" hidden>
+          <div class="row">
+            <label data-i18n="settings.ipAddr">Static IP <input id="netIp" placeholder="192.168.1.50" autocomplete="off"></label>
+            <label data-i18n="settings.ipGw">Gateway <input id="netGw" placeholder="192.168.1.1" autocomplete="off"></label>
+          </div>
+          <div class="row">
+            <label data-i18n="settings.ipMask">Subnet mask <input id="netMask" placeholder="255.255.255.0" autocomplete="off"></label>
+            <label data-i18n="settings.ipDns1">DNS 1 <input id="netDns1" placeholder="192.168.1.1" autocomplete="off"></label>
+            <label data-i18n="settings.ipDns2">DNS 2 <input id="netDns2" placeholder="8.8.8.8" autocomplete="off"></label>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
         <h3 data-i18n="settings.network">WiFi Fallback</h3>
         <p class="muted" style="margin-top:0" data-i18n="settings.wifiHint">Used only when no Ethernet link is detected. Changes take effect on the next WiFi fallback or after a restart.</p>
         <label data-i18n="settings.wifiSsid">WiFi network (SSID) <input id="setWifiSsid" autocomplete="off"></label>
@@ -171,10 +192,10 @@
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
-  <script src="/js/i18n.js?v=2"></script>
+  <script src="/js/i18n.js?v=3"></script>
   <script src="/js/app.js?v=2"></script>
   <script src="/js/charts.js?v=2"></script>
-  <script src="/js/settings.js?v=2"></script>
+  <script src="/js/settings.js?v=3"></script>
   <script src="/js/logs.js?v=2"></script>
 </body>
 </html>

@@ -39,6 +39,16 @@ public:
   String    wifiSsid;       // WiFi fallback SSID (editable from the UI)
   String    wifiPass;       // WiFi fallback password (editable from the UI)
 
+  // Network addressing (editable from the UI). When netDhcp is false the
+  // device prefers the static address below, but only adopts it on networks
+  // where it is valid; otherwise it stays on the DHCP-assigned address.
+  bool      netDhcp;        // true = always DHCP; false = prefer static IP
+  String    netIp;          // static device address  (dotted-quad)
+  String    netGw;          // gateway / router
+  String    netMask;        // subnet mask
+  String    netDns1;        // primary DNS
+  String    netDns2;        // secondary DNS
+
   void  begin();            // load from flash or seed defaults
   bool  load();
   bool  save();             // atomic write (temp file + rename)

@@ -17,7 +17,7 @@
 // --------------------------------------------------------------------
 #define FW_VERSION        "1.0.0"
 #define FW_BUILD_DATE     __DATE__ " " __TIME__
-#define DEVICE_HOSTNAME   "fridge-monitor"
+#define DEVICE_HOSTNAME   "monitor"
 
 // --------------------------------------------------------------------
 //  Sensor configuration
@@ -53,10 +53,13 @@
 #endif
 
 // --------------------------------------------------------------------
-//  Static IP (applied to both Ethernet and the WiFi fallback)
-//  Set USE_STATIC_IP to 0 to use DHCP. Edit the octets to match your LAN.
-//  NOTE: the IP must be inside your router's subnet and ideally OUTSIDE its
-//  DHCP pool to avoid address conflicts.
+//  Network addressing — DEFAULTS only (live values are editable in the
+//  Settings UI and persisted to NVS). USE_STATIC_IP / the octets below seed
+//  the factory defaults; at runtime the device always brings the link up via
+//  DHCP first and only adopts the static IP when it is valid on the current
+//  network, so it works on ANY LAN while keeping the static address at home.
+//  NOTE: the static IP must be inside the router's subnet and ideally OUTSIDE
+//  its DHCP pool to avoid address conflicts.
 // --------------------------------------------------------------------
 #define USE_STATIC_IP        1
 #define STATIC_IP_OCTETS     192,168,1,50      // device address
@@ -64,6 +67,7 @@
 #define STATIC_MASK_OCTETS   255,255,255,0     // subnet mask (/24)
 #define STATIC_DNS1_OCTETS   192,168,1,1       // primary DNS (often = gateway)
 #define STATIC_DNS2_OCTETS   8,8,8,8           // secondary DNS
+#define ETH_DHCP_TIMEOUT_MS  8000UL            // wait for DHCP before forcing static
 
 // --------------------------------------------------------------------
 //  WiFi fallback (used only when no Ethernet link is detected)

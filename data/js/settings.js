@@ -15,6 +15,10 @@ window.Settings = (function () {
     document.getElementById('emCustom').hidden =
       document.getElementById('emProvider').value !== 'custom';
   }
+  function toggleNetStatic() {
+    document.getElementById('netStatic').hidden =
+      document.getElementById('netMode').value !== 'static';
+  }
 
   function load() {
     API.get('/api/settings').then(s => {
@@ -39,6 +43,15 @@ window.Settings = (function () {
       document.getElementById('setDeviceName').value  = s.deviceName || '';
       document.getElementById('setOutdoorName').value = s.outdoorName || '';
       document.getElementById('setTz').value          = s.tz || '';
+
+      const n = s.net || {};
+      document.getElementById('netMode').value  = n.dhcp ? 'dhcp' : 'static';
+      document.getElementById('netIp').value    = n.ip   || '';
+      document.getElementById('netGw').value    = n.gw   || '';
+      document.getElementById('netMask').value  = n.mask || '';
+      document.getElementById('netDns1').value  = n.dns1 || '';
+      document.getElementById('netDns2').value  = n.dns2 || '';
+      toggleNetStatic();
 
       const w = s.wifi || {};
       document.getElementById('setWifiSsid').value       = w.ssid || '';
@@ -110,6 +123,14 @@ window.Settings = (function () {
       deviceName:  document.getElementById('setDeviceName').value,
       outdoorName: document.getElementById('setOutdoorName').value,
       tz:          document.getElementById('setTz').value,
+      net: {
+        dhcp: document.getElementById('netMode').value !== 'static',
+        ip:   document.getElementById('netIp').value.trim(),
+        gw:   document.getElementById('netGw').value.trim(),
+        mask: document.getElementById('netMask').value.trim(),
+        dns1: document.getElementById('netDns1').value.trim(),
+        dns2: document.getElementById('netDns2').value.trim()
+      },
       wifi: { ssid: document.getElementById('setWifiSsid').value },
       email: {
         enabled:   document.getElementById('emEnabled').checked,
@@ -161,6 +182,7 @@ window.Settings = (function () {
   });
 
   document.getElementById('emProvider').addEventListener('change', toggleCustom);
+  document.getElementById('netMode').addEventListener('change', toggleNetStatic);
 
   // Reset the form back to the saved (default) settings, discarding edits.
   document.getElementById('emReset').addEventListener('click', () => {

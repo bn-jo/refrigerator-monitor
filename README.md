@@ -13,7 +13,7 @@ tolerance with hardware/software watchdogs and automatic recovery.
 | Storage | Pre-allocated **circular DB on LittleFS**, CRC-protected, 30-day window |
 | UI | Responsive HTML/CSS/JS, Chart.js history, dashboard, settings, logs |
 | Alerts | SMTP e-mail: immediate + 30-min reminders + recovery, anti-spam |
-| Networking | Ethernet (DHCP) with **WiFi fallback**, Internet reachability probe |
+| Networking | Ethernet (DHCP-first, optional static IP) with **WiFi fallback**, `monitor.local` (mDNS), Internet reachability probe |
 | Reliability | HW Task WDT + SW watchdog, safe boot, power-loss-safe storage |
 | Security | Login, salted **SHA-256** password, session cookies + idle timeout |
 | Time | NTP + configurable POSIX timezone, timestamps on all data/logs |
@@ -105,10 +105,17 @@ pio run -t uploadfs
 pio device monitor
 ```
 
-### Static IP
-The device uses a **fixed IP** so the UI is always reachable at a known
-address. Edit the octets in `src/config.h` to match your LAN **before
-flashing** (set `USE_STATIC_IP 0` to use DHCP instead):
+### Network addressing
+The device **works on any network out of the box**: it joins via DHCP first,
+then — if a static address is configured and turns out to be valid on that
+network — switches to it automatically. On a different LAN it simply keeps the
+DHCP address, so it is never stranded. Either way it is always reachable by
+name at **`http://monitor.local`** (mDNS).
+
+Addressing is editable from the web UI (**Settings → IP Address**) and persisted
+to NVS — no reflash needed when moving networks. Choose *Automatic (DHCP)* or
+*Prefer static address* and set IP / gateway / mask / DNS. The compile-time
+defaults in `src/config.h` only seed the factory values:
 
 ```c
 #define STATIC_IP_OCTETS     192,168,1,50    // device address
@@ -116,9 +123,9 @@ flashing** (set `USE_STATIC_IP 0` to use DHCP instead):
 #define STATIC_MASK_OCTETS   255,255,255,0   // subnet
 ```
 
-> The address must be inside your router's subnet and ideally **outside its
-> DHCP pool** to avoid conflicts. It applies to both Ethernet and the WiFi
-> fallback. Then browse to `http://192.168.1.50/`.
+> A static address must be inside the router's subnet and ideally **outside its
+> DHCP pool** to avoid conflicts. The same preference applies to the WiFi
+> fallback. On a network with no DHCP server, the static IP is applied directly.
 
 ### OTA (over-the-air) updates
 After the **first** USB flash, update the device wirelessly over the network
@@ -146,17 +153,17 @@ into the new image when finished.
 
 ---
 
-## Finding the device IP
+## Finding the device
 
-By default the device uses the **static IP** set in `config.h`
-(`192.168.1.50` out of the box) — just browse to `http://192.168.1.50/`. The
-serial monitor also prints `Ethernet static IP …` at boot to confirm.
+The simplest way on any network: browse to **`http://monitor.local`** (mDNS) —
+this works regardless of which IP the device ended up with.
 
-If you switched to DHCP (`USE_STATIC_IP 0`):
-- **Serial monitor** — prints `Ethernet got IP x.x.x.x` at boot.
-- **Router admin page** — look for hostname **`fridge-monitor`** in the DHCP
-  client list (and assign a DHCP reservation for a permanent address).
-- **Network scan** — `ping fridge-monitor.local` (mDNS) or `nmap -sn 192.168.1.0/24`.
+To find the numeric address:
+- **Serial monitor** — prints `Ethernet got IP x.x.x.x`, then `Ethernet static
+  IP …` if it promoted to the configured static address.
+- **Router admin page** — look for hostname **`monitor`** in the DHCP client
+  list (and assign a DHCP reservation for a permanent address if you like).
+- **Network scan** — `ping monitor.local` or `nmap -sn 192.168.1.0/24`.
 
 ---
 
@@ -164,8 +171,8 @@ If you switched to DHCP (`USE_STATIC_IP 0`):
 
 - **Watchdogs:** hardware Task WDT (30 s) resets on lockups; a software
   watchdog restarts cleanly if acquisition stalls.
-- **Network recovery:** Ethernet auto-reconnects; falls back to WiFi
-  (`ben`) if no link in 15 s; prefers Ethernet again when it returns.
+- **Network recovery:** Ethernet auto-reconnects; falls back to the configured
+  WiFi SSID if no link in 15 s; prefers Ethernet again when it returns.
 - **No data loss on power failure:** CRC-protected circular DB + atomic
   settings writes; the ring is rebuilt by scan if the header is damaged.
 - **Fault visibility:** sensor/network/storage faults appear on the

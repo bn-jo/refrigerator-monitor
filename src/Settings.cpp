@@ -25,6 +25,11 @@ static String sha256Hex(const String& in) {
   return String(hex);
 }
 
+// Read a JSON string field, falling back to a default when absent/non-string.
+static String jstr(JsonVariantConst v, const String& def) {
+  return v.is<const char*>() ? v.as<String>() : def;
+}
+
 static String randomHex(size_t bytes) {
   String s;
   for (size_t i = 0; i < bytes; i++) {
@@ -53,6 +58,13 @@ void SettingsManager::applyDefaults() {
   deviceName = DEVICE_HOSTNAME;
   wifiSsid   = WIFI_FALLBACK_SSID;
   wifiPass   = WIFI_FALLBACK_PASS;
+
+  netDhcp    = !USE_STATIC_IP;
+  netIp      = IPAddress(STATIC_IP_OCTETS).toString();
+  netGw      = IPAddress(STATIC_GW_OCTETS).toString();
+  netMask    = IPAddress(STATIC_MASK_OCTETS).toString();
+  netDns1    = IPAddress(STATIC_DNS1_OCTETS).toString();
+  netDns2    = IPAddress(STATIC_DNS2_OCTETS).toString();
 
   users.clear();
   addOrUpdateUser(DEFAULT_USER, DEFAULT_PASS);
@@ -132,6 +144,13 @@ bool SettingsManager::load() {
   wifiSsid        = doc["wifi"]["ssid"] | String(WIFI_FALLBACK_SSID);
   wifiPass        = doc["wifi"]["pass"] | String(WIFI_FALLBACK_PASS);
 
+  netDhcp = doc["net"]["dhcp"].is<bool>() ? doc["net"]["dhcp"].as<bool>() : !USE_STATIC_IP;
+  netIp   = jstr(doc["net"]["ip"],   IPAddress(STATIC_IP_OCTETS).toString());
+  netGw   = jstr(doc["net"]["gw"],   IPAddress(STATIC_GW_OCTETS).toString());
+  netMask = jstr(doc["net"]["mask"], IPAddress(STATIC_MASK_OCTETS).toString());
+  netDns1 = jstr(doc["net"]["dns1"], IPAddress(STATIC_DNS1_OCTETS).toString());
+  netDns2 = jstr(doc["net"]["dns2"], IPAddress(STATIC_DNS2_OCTETS).toString());
+
   email.host      = doc["email"]["host"]      | "";
   email.port      = doc["email"]["port"]      | 465;
   email.user      = doc["email"]["user"]      | "";
@@ -176,6 +195,12 @@ bool SettingsManager::save() {
   doc["deviceName"]  = deviceName;
   doc["wifi"]["ssid"] = wifiSsid;
   doc["wifi"]["pass"] = wifiPass;
+  doc["net"]["dhcp"] = netDhcp;
+  doc["net"]["ip"]   = netIp;
+  doc["net"]["gw"]   = netGw;
+  doc["net"]["mask"] = netMask;
+  doc["net"]["dns1"] = netDns1;
+  doc["net"]["dns2"] = netDns2;
   doc["email"]["host"]      = email.host;
   doc["email"]["port"]      = email.port;
   doc["email"]["user"]      = email.user;
@@ -217,6 +242,13 @@ String SettingsManager::toPublicJson() const {
   // WiFi fallback: expose the SSID but never the password.
   doc["wifi"]["ssid"]    = wifiSsid;
   doc["wifi"]["hasPass"] = !wifiPass.isEmpty();
+  // Network addressing (not secret).
+  doc["net"]["dhcp"] = netDhcp;
+  doc["net"]["ip"]   = netIp;
+  doc["net"]["gw"]   = netGw;
+  doc["net"]["mask"] = netMask;
+  doc["net"]["dns1"] = netDns1;
+  doc["net"]["dns2"] = netDns2;
   // E-mail: expose everything except the password.
   doc["email"]["host"]      = email.host;
   doc["email"]["port"]      = email.port;
@@ -257,6 +289,16 @@ bool SettingsManager::updateFromJson(const String& body, String& errOut) {
     // Only overwrite the password if a non-empty one was supplied.
     if (w["pass"].is<const char*>() && strlen(w["pass"]) > 0)
       wifiPass = w["pass"].as<String>();
+  }
+
+  if (doc["net"].is<JsonObject>()) {
+    JsonObject n = doc["net"];
+    if (n["dhcp"].is<bool>())         netDhcp = n["dhcp"].as<bool>();
+    if (n["ip"].is<const char*>())    netIp   = n["ip"].as<String>();
+    if (n["gw"].is<const char*>())    netGw   = n["gw"].as<String>();
+    if (n["mask"].is<const char*>())  netMask = n["mask"].as<String>();
+    if (n["dns1"].is<const char*>())  netDns1 = n["dns1"].as<String>();
+    if (n["dns2"].is<const char*>())  netDns2 = n["dns2"].as<String>();
   }
 
   if (doc["email"].is<JsonObject>()) {

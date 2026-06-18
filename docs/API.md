@@ -2,7 +2,7 @@
 
 All responses are JSON. All endpoints except `/api/login` require a valid
 session cookie (`FMSESSION`), set by logging in. Replace `192.168.1.50`
-with your device IP.
+with your device IP — or just use `monitor.local` (mDNS).
 
 ---
 
@@ -33,7 +33,7 @@ Invalidates the current session.
 System and connectivity health.
 ```json
 {
-  "fw":"1.0.0","build":"Jun 16 2026 14:00:00","device":"fridge-monitor",
+  "fw":"1.0.0","build":"Jun 16 2026 14:00:00","device":"monitor",
   "mode":"Ethernet","ethUp":true,"wifi":false,"internet":true,
   "ip":"192.168.1.50","mac":"AA:BB:CC:DD:EE:FF",
   "time":"2026-06-16 14:03:21","timeSynced":true,
@@ -91,12 +91,18 @@ curl -b cookies.txt -X POST http://192.168.1.50/api/settings \
       {"name":"Refrigerator 4","thr":3,"en":true},
       {"name":"Refrigerator 5","thr":4,"en":true}],
     "outdoorName":"Outdoor","tz":"IST-2IDT,M3.4.4/26,M10.5.0",
+    "net":{"dhcp":false,"ip":"192.168.1.50","gw":"192.168.1.1",
+           "mask":"255.255.255.0","dns1":"192.168.1.1","dns2":"8.8.8.8"},
     "email":{"enabled":true,"host":"smtp.gmail.com","port":465,
              "user":"alerts@example.com","pass":"app-password",
              "sender":"alerts@example.com","recipient":"manager@example.com"}
   }'
 ```
 → `{"ok":true}` or `{"error":"..."}`.
+
+`net.dhcp:true` forces DHCP. With `dhcp:false` the device prefers the static
+address but only adopts it on networks where it is valid (otherwise it stays on
+DHCP). Network changes take effect after a restart.
 
 ## `POST /api/email/test`
 Sends a test e-mail using the stored SMTP settings → `{"ok":true|false}`.
