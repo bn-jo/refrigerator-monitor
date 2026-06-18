@@ -180,7 +180,9 @@
     <h1>Industrial fridge monitoring,<br><span class="grad">on a single ESP32.</span></h1>
     <p class="sub">A complete temperature-monitoring system for up to five refrigerators plus an
       outdoor sensor. Live dashboard, 30 days of history, and instant e-mail alarms — served
-      straight from the device over Ethernet. No subscriptions, no gateway, no cloud.</p>
+      straight from the device over Ethernet. No subscriptions, no gateway, no cloud.
+      <strong>Fully customizable for almost any monitoring and e-mail-alert need</strong> —
+      not just refrigerators.</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://github.com/bn-jo/refrigerator-monitor" target="_blank" rel="noopener">⭐ View on GitHub</a>
       <a class="btn btn-ghost" href="#features">Explore features →</a>
@@ -198,30 +200,10 @@
         <span class="d d1"></span><span class="d d2"></span><span class="d d3"></span>
         <span class="url">http://monitor.local</span>
       </div>
-      <div class="mock-body">
-        <div class="mock-h">
-          <span class="mark">❄️</span><span class="t">Cold Storage — Live Temperatures</span>
-          <span class="pills"><span class="p">Ethernet ✓</span><span class="p">Internet ✓</span></span>
-        </div>
-        <div class="fridges">
-          <div class="fr"><div class="n">Freezer A</div><div class="v">-18.4°</div><div class="s"><i></i>Normal</div></div>
-          <div class="fr"><div class="n">Chiller B</div><div class="v">3.1°</div><div class="s"><i></i>Normal</div></div>
-          <div class="fr warn"><div class="n">Display C</div><div class="v">6.8°</div><div class="s"><i></i>Near limit</div></div>
-          <div class="fr"><div class="n">Walk-in D</div><div class="v">2.2°</div><div class="s"><i></i>Normal</div></div>
-          <div class="fr alarm"><div class="n">Prep E</div><div class="v">11.5°</div><div class="s"><i></i>Alarm</div></div>
-        </div>
-        <div class="chart">
-          <svg viewBox="0 0 600 150" preserveAspectRatio="none">
-            <line x1="0" y1="38" x2="600" y2="38" stroke="#1e2d45"/>
-            <line x1="0" y1="75" x2="600" y2="75" stroke="#1e2d45"/>
-            <line x1="0" y1="112" x2="600" y2="112" stroke="#1e2d45"/>
-            <polyline fill="none" stroke="#60a5fa" stroke-width="2" points="0,110 80,108 160,112 240,100 320,104 400,98 480,102 560,96 600,99"/>
-            <polyline fill="none" stroke="#34d399" stroke-width="2" points="0,70 80,66 160,72 240,60 320,64 400,55 480,62 560,52 600,58"/>
-            <polyline fill="none" stroke="#fbbf24" stroke-width="2" points="0,48 80,52 160,40 240,44 320,30 400,40 480,28 560,36 600,26"/>
-            <polyline fill="none" stroke="#f87171" stroke-width="2" points="0,95 80,88 160,80 240,70 320,58 400,46 480,40 560,30 600,22"/>
-          </svg>
-        </div>
-      </div>
+      <img src="dashboard.png" alt="Live dashboard showing five refrigerators — four normal and one (Meat Refrigerator) in alarm at 9.3 °C — with a 24-hour history chart"
+           style="display:block;width:100%;height:auto" loading="lazy">
+      <p style="margin:0;padding:8px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);background:rgba(255,255,255,.02)">
+        Real dashboard — four units cold &amp; in range, one in alarm.</p>
     </div>
 
   </div>
@@ -242,7 +224,8 @@
   <div class="eyebrow">Features</div>
   <h2>Everything you need to keep the cold chain honest</h2>
   <p class="lead">Built for reliability in a real facility — local-first, resilient to network
-    loss, and simple enough to run unattended for months.</p>
+    loss, and simple enough to run unattended for months. The sensors, thresholds, and e-mail
+    alert rules adapt to whatever you need to monitor — fridges, freezers, server rooms, and more.</p>
 
   <div class="grid g3">
     <div class="feat"><div class="ic">🌡️</div><h3>Live multi-fridge dashboard</h3>
