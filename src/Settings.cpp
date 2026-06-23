@@ -53,7 +53,7 @@ void SettingsManager::applyDefaults() {
     fridge[i].enabled   = true;
   }
   outdoorName = "Outdoor";
-  email = { "", 465, "", "", "", "", false };
+  email = { "", 465, "", "", "", "", "", false };
   timezone   = DEFAULT_TZ;
   deviceName = DEVICE_HOSTNAME;
   wifiSsid   = WIFI_FALLBACK_SSID;
@@ -156,8 +156,9 @@ bool SettingsManager::load() {
   email.user      = doc["email"]["user"]      | "";
   email.pass      = doc["email"]["pass"]      | "";
   email.sender    = doc["email"]["sender"]    | "";
-  email.recipient = doc["email"]["recipient"] | "";
-  email.enabled   = doc["email"]["enabled"]   | false;
+  email.recipient = doc["email"]["recipient"]  | "";
+  email.recipient2 = doc["email"]["recipient2"] | "";
+  email.enabled   = doc["email"]["enabled"]    | false;
 
   // Users: new multi-user array, with migration from the old single "auth".
   users.clear();
@@ -206,7 +207,8 @@ bool SettingsManager::save() {
   doc["email"]["user"]      = email.user;
   doc["email"]["pass"]      = email.pass;
   doc["email"]["sender"]    = email.sender;
-  doc["email"]["recipient"] = email.recipient;
+  doc["email"]["recipient"]  = email.recipient;
+  doc["email"]["recipient2"] = email.recipient2;
   doc["email"]["enabled"]   = email.enabled;
   JsonArray us = doc["users"].to<JsonArray>();
   for (auto& u : users) {
@@ -254,7 +256,8 @@ String SettingsManager::toPublicJson() const {
   doc["email"]["port"]      = email.port;
   doc["email"]["user"]      = email.user;
   doc["email"]["sender"]    = email.sender;
-  doc["email"]["recipient"] = email.recipient;
+  doc["email"]["recipient"]  = email.recipient;
+  doc["email"]["recipient2"] = email.recipient2;
   doc["email"]["enabled"]   = email.enabled;
   doc["email"]["hasPass"]   = !email.pass.isEmpty();
   // Expose the list of usernames only (never salts/hashes).
@@ -308,6 +311,7 @@ bool SettingsManager::updateFromJson(const String& body, String& errOut) {
     if (e["user"].is<const char*>())      email.user      = e["user"].as<String>();
     if (e["sender"].is<const char*>())    email.sender    = e["sender"].as<String>();
     if (e["recipient"].is<const char*>()) email.recipient = e["recipient"].as<String>();
+    if (e["recipient2"].is<const char*>()) email.recipient2 = e["recipient2"].as<String>();
     if (e["enabled"].is<bool>())          email.enabled   = e["enabled"].as<bool>();
     // Only overwrite the password if a non-empty one was supplied.
     if (e["pass"].is<const char*>() && strlen(e["pass"]) > 0)

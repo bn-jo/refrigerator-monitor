@@ -8,7 +8,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        user: document.getElementById('user').value,
+        // Trim the username: mobile keyboards often append a trailing space
+        // after autocomplete. The password is sent verbatim (spaces may be
+        // significant). Autocapitalize/autocorrect are disabled on the field.
+        user: document.getElementById('user').value.trim(),
         pass: document.getElementById('pass').value
       })
     });

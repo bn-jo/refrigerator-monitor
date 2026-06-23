@@ -88,6 +88,9 @@ static void acquisitionTask(void*) {
       Alarms.evaluate(temps, valid);
       Watchdog.heartbeatSensors();
     }
+    // E-mail the web address if the device landed on a brand-new IP. Runs here
+    // (not in loop()) because SMTP blocks and shares the session with alarms.
+    Net.serviceAddressNotice();
     vTaskDelay(pdMS_TO_TICKS(100));
   }
 }

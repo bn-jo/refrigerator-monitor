@@ -5,10 +5,12 @@
 #include "config.h"
 #include "Logger.h"
 #include "Settings.h"
+#include "Email.h"
 #include <ETH.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <ESPmDNS.h>
+#include <Preferences.h>
 
 NetworkClass Net;
 
@@ -206,6 +208,59 @@ void NetworkClass::probeInternet() {
     LOGW("net", ok ? "Internet connectivity restored" : "Internet connectivity lost");
   }
   _inet = ok;
+}
+
+// ---- address-change e-mail notification -----------------------------
+// The single last-notified address lives in its own NVS namespace so it
+// survives reboots, crashes, power-cuts, OTA and filesystem re-uploads.
+// Comparing the current address against this persisted value is what makes a
+// reboot on an UNCHANGED IP stay silent, while a genuine change always sends.
+static const char* KNOWN_IPS_NS  = "netnotify";
+static const char* KNOWN_IPS_KEY = "lastip";
+
+String NetworkClass::loadLastNotifiedIp() {
+  Preferences p;
+  p.begin(KNOWN_IPS_NS, true);
+  String last = p.getString(KNOWN_IPS_KEY, "");
+  p.end();
+  return last;
+}
+
+void NetworkClass::saveLastNotifiedIp(const String& ip) {
+  Preferences p;
+  p.begin(KNOWN_IPS_NS, false);
+  p.putString(KNOWN_IPS_KEY, ip);
+  p.end();
+}
+
+void NetworkClass::serviceAddressNotice() {
+  // Need a working link AND Internet, otherwise SMTP can't be reached.
+  if (!(_ethUp || _wifi) || !_inet) return;
+
+  String cur = ip();
+  if (cur.isEmpty() || cur == "0.0.0.0") return;
+
+  // Load the persisted last-notified address once, then keep a RAM mirror so
+  // we don't hit flash every acquisition cycle.
+  if (!_lastIpLoaded) { _lastNotifiedIp = loadLastNotifiedIp(); _lastIpLoaded = true; }
+
+  // Only notify when the address actually changed from the last one we sent.
+  // (Same address after a reboot/crash => no e-mail.)
+  if (cur == _lastNotifiedIp) return;
+
+  // Changed address: attempt to notify, with a backoff so a failing SMTP
+  // server isn't retried on every acquisition cycle.
+  if (_lastAddrAttempt != 0 && millis() - _lastAddrAttempt < 60000UL) return;
+  _lastAddrAttempt = millis();
+
+  if (Email.sendAddress(cur, mode())) {
+    saveLastNotifiedIp(cur);               // persist so a reboot won't resend it
+    _lastNotifiedIp = cur;
+    LOGI("net", "web address changed — e-mailed: " + cur);
+  } else {
+    // Leave _lastNotifiedIp unchanged so the next cycle (after backoff) retries.
+    LOGW("net", "address changed to " + cur + " — e-mail not sent (will retry)");
+  }
 }
 
 String NetworkClass::ip() const {

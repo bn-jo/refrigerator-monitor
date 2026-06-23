@@ -66,6 +66,7 @@ window.Settings = (function () {
       document.getElementById('emUser').value        = e.user || '';
       document.getElementById('emPass').placeholder  = e.hasPass ? tt('settings.unchanged') : '';
       document.getElementById('emRecipient').value   = e.recipient || '';
+      document.getElementById('emRecipient2').value  = e.recipient2 || '';
       // From address only when it differs from the login (relay services).
       document.getElementById('emFrom').value =
         (e.sender && e.sender !== e.user) ? e.sender : '';
@@ -137,7 +138,8 @@ window.Settings = (function () {
         host, port,
         user,
         sender,
-        recipient: document.getElementById('emRecipient').value
+        recipient: document.getElementById('emRecipient').value,
+        recipient2: document.getElementById('emRecipient2').value
       }
     };
     const pass = document.getElementById('emPass').value;

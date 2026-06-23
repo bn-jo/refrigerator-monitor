@@ -52,6 +52,9 @@ bool EmailClass::send(const String& subject, const String& htmlBody) {
   msg.sender.email = Settings.email.sender.c_str();
   msg.subject      = subject.c_str();
   msg.addRecipient("", Settings.email.recipient.c_str());
+  // Optional second recipient — both addresses receive every alert/notice.
+  if (!Settings.email.recipient2.isEmpty())
+    msg.addRecipient("", Settings.email.recipient2.c_str());
   msg.html.content = htmlBody.c_str();
   msg.html.charSet = "utf-8";
   msg.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
@@ -101,6 +104,26 @@ bool EmailClass::sendRecovery(const String& name, float temp, float threshold) {
     "<p style='margin-top:14px'>The alarm has been cleared.</p>";
   return send("[RECOVERED] " + name + " back to normal",
               wrap("Temperature Recovered", "#16a34a", body));
+}
+
+bool EmailClass::sendAddress(const String& ip, const String& mode) {
+  String url = "http://" + ip + "/";
+  String body =
+    "<p>The monitor is now reachable at a <b>new network address</b>.</p>"
+    "<table style='border-collapse:collapse;width:100%'>"
+    "<tr><td style='padding:6px 0'>Web address</td>"
+    "<td style='text-align:right'><a href='" + url + "'>" + url + "</a></td></tr>"
+    "<tr><td style='padding:6px 0'>Also try</td>"
+    "<td style='text-align:right'><a href='http://" DEVICE_HOSTNAME ".local/'>"
+    "http://" DEVICE_HOSTNAME ".local/</a></td></tr>"
+    "<tr><td style='padding:6px 0'>Connection</td>"
+    "<td style='text-align:right'>" + mode + "</td></tr>"
+    "<tr><td style='padding:6px 0'>Time</td>"
+    "<td style='text-align:right'>" + TimeSync.isoNow() + "</td></tr></table>"
+    "<p style='margin-top:14px'>Use this address to open the dashboard. This "
+    "message is sent once per new address.</p>";
+  return send("[ADDRESS] Monitor reachable at " + ip,
+              wrap("New Web Address", "#2563eb", body));
 }
 
 bool EmailClass::sendTest() {

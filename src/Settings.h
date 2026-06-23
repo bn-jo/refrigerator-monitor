@@ -19,6 +19,7 @@ struct EmailCfg {
   String  pass;        // SMTP password
   String  sender;      // From: address
   String  recipient;   // To: address
+  String  recipient2;  // optional second To: address ("" = none)
   bool    enabled;
 };
 
