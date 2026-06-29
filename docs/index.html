@@ -167,6 +167,7 @@
     <nav class="nav-links">
       <a href="#features" class="hide-sm">Features</a>
       <a href="#how" class="hide-sm">How it works</a>
+      <a href="#hardware" class="hide-sm">Hardware</a>
       <a href="#tech" class="hide-sm">Tech</a>
       <a class="btn btn-primary" href="https://github.com/bn-jo/refrigerator-monitor" target="_blank" rel="noopener">View on GitHub</a>
     </nav>
@@ -268,8 +269,35 @@
   </div>
 </div></section></div>
 
+<!-- ============ HARDWARE ============ -->
+<section id="hardware"><div class="wrap">
+  <div class="eyebrow">Hardware</div>
+  <h2>A real, finished build — not just a breadboard</h2>
+  <p class="lead">The whole monitor lives in a compact 3D-printed case with the Ethernet jack and USB
+    exposed, and waterproof DS18B20 probes on long leads that reach right into each fridge.</p>
+
+  <div class="grid g2" style="align-items:center">
+    <figure style="margin:0;border-radius:15px;overflow:hidden;border:1px solid var(--line);
+        background:var(--card2);box-shadow:0 20px 50px rgba(0,0,0,.45)">
+      <img src="hardware.jpg" alt="The finished refrigerator monitor in its blue 3D-printed case with the Ethernet jack and USB port exposed, alongside four waterproof DS18B20 temperature probes on coiled leads"
+           style="display:block;width:100%;height:auto" loading="lazy">
+    </figure>
+    <div>
+      <h3 style="font-size:19px;margin-bottom:10px">🧊 3D-printed enclosure</h3>
+      <p style="color:var(--muted);font-size:15.5px;margin-bottom:18px">
+        Housed in the open-source <b>Waveshare ESP32-S3-ETH PoE case</b> from MakerWorld —
+        a clean, vented enclosure with cut-outs for the RJ45 and USB ports. Print it, drop in the
+        board, route the probe cables, and you have a deploy-ready unit.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://makerworld.com/en/models/1536469-waveshare-esp32-s3-eth-poe-case-opendtu#profileId-2151560" target="_blank" rel="noopener">🖨️ Get the 3D case model</a>
+        <a class="btn btn-ghost" href="https://github.com/bn-jo/refrigerator-monitor/blob/main/docs/WIRING.md" target="_blank" rel="noopener">Wiring guide →</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
 <!-- ============ TECH ============ -->
-<section id="tech"><div class="wrap">
+<div class="band"><section id="tech"><div class="wrap">
   <div class="eyebrow">Under the hood</div>
   <h2>Engineered to be boring — in the best way</h2>
   <p class="lead">Embedded C++ on a battle-tested microcontroller, with a lightweight
@@ -286,7 +314,7 @@
     <div class="chip"><span>#</span> SMTP e-mail alerts</div>
     <div class="chip"><span>#</span> OTA updates</div>
   </div>
-</div></section>
+</div></section></div>
 
 <!-- ============ FINAL CTA ============ -->
 <div class="final"><section><div class="wrap">
